@@ -2,7 +2,7 @@
 name: dynamical-system-tuner
 description: Tunes and trials parameters for dynamical systems, including nonlinear systems, ODE models, circuit models, physical models, and mathematical systems. Use when the user asks to tune, trial, sweep, explore, adjust, or test parameters of a dynamical system, nonlinear system, ODE system, state-space model, chaos model, oscillator, or circuit model, especially when generating MATLAB simulations, time-response plots, and phase portraits.
 metadata:
-  version: 1.0.0
+  version: 1.2
   category: dynamical-systems
 ---
 
@@ -81,6 +81,8 @@ If any required item is missing, stop and ask the user to provide the missing in
 
 Do not proceed by assigning default values.
 
+The number of parameter sets is not a required user-provided item. If the user does not specify how many parameter sets to test, use the default count defined in Step 11.
+
 ---
 
 ## Critical Rule: No Unprovided Required Values
@@ -106,6 +108,8 @@ Do not automatically choose values such as:
 - the first 1000 time units
 - the first 100000 samples
 - any other inferred transient length
+
+The default parameter-set count is an operational rule of this skill and does not override the requirement that all scientific and simulation-defining inputs must be explicitly provided by the user.
 
 ---
 
@@ -394,11 +398,38 @@ This skill performs trial parameter selection rather than strict grid optimizati
 
 The agent does not need to use a fixed step size or exhaustive grid unless the user explicitly requests it.
 
-The agent should generate a manageable number of candidate parameter sets that are meaningfully different and useful for visual inspection.
+The agent should generate candidate parameter sets that are meaningfully different and useful for visual inspection.
 
 ---
 
-## Step 11. MATLAB Script Preparation
+## Step 11. Parameter-Set Count Rule
+
+If the user does not explicitly specify the number of parameter sets to run, run and save results for `300` parameter sets.
+
+This is the default trial count.
+
+If the user explicitly requests a different number of parameter sets, follow the user's requested count.
+
+Examples:
+
+- If the user says to run 500 groups, run 500 parameter sets.
+- If the user says to run 1000 groups, run 1000 parameter sets.
+- If the user says to run only 50 groups for a quick test, run 50 parameter sets.
+- If the user does not specify the number of groups, run 300 parameter sets.
+
+The parameter-set count controls how many candidate parameter groups are generated, simulated, plotted, and saved.
+
+Each parameter set should produce:
+
+- one time-response figure
+- one phase-portrait figure
+- one corresponding parameter-log entry
+
+If a simulation fails, the failed case still counts as an attempted parameter set and must be recorded in the parameter log.
+
+---
+
+## Step 12. MATLAB Script Preparation
 
 After all required information is complete, prepare a MATLAB script.
 
@@ -446,7 +477,7 @@ The sample script style includes:
 
 ---
 
-## Step 12. Solver Rule
+## Step 13. Solver Rule
 
 Use the custom solver `ode45Ps` if the sample script uses it.
 
@@ -476,7 +507,7 @@ Suggest possible remedies only as suggestions, such as:
 
 ---
 
-## Step 13. Parameter Set Structure
+## Step 14. Parameter Set Structure
 
 Prefer storing all trial parameter sets in one script using a clear structure.
 
@@ -501,7 +532,7 @@ Tunable parameters should vary according to the trial plan.
 
 ---
 
-## Step 14. Dimension-Adaptive Plotting
+## Step 15. Dimension-Adaptive Plotting
 
 Adapt the plotting code to the dimension of the user's system.
 
@@ -533,7 +564,7 @@ Add comments in the script explaining the selected phase-portrait pairs.
 
 ---
 
-## Step 15. Transient-Discard Rules
+## Step 16. Transient-Discard Rules
 
 The user must explicitly provide two transient-discard settings:
 
@@ -599,7 +630,7 @@ unless the user explicitly requests index-based transient discard.
 
 ---
 
-## Step 16. Figure Annotation Rules
+## Step 17. Figure Annotation Rules
 
 Every generated figure must clearly show which parameter set produced it.
 
@@ -627,7 +658,7 @@ When the annotation becomes too long for the title, use one or more of:
 
 ---
 
-## Step 17. Output Folder Rules
+## Step 18. Output Folder Rules
 
 If the user specifies an output folder, save all generated result images there.
 
@@ -657,7 +688,7 @@ All output images for the same trial should be stored directly in the same outpu
 
 ---
 
-## Step 18. Image Naming Rules
+## Step 19. Image Naming Rules
 
 Use clear, ordered, machine-readable image names.
 
@@ -685,9 +716,20 @@ Use `time_response`, not `time_responds`.
 
 The numeric index must correspond to the parameter set index.
 
+When the number of parameter sets exceeds 999, use enough digits to keep filenames correctly ordered.
+
+Examples:
+
+```text
+phase_0001.png
+time_response_0001.png
+phase_1000.png
+time_response_1000.png
+```
+
 ---
 
-## Step 19. Parameter Log
+## Step 20. Parameter Log
 
 For every parameter trial, generate a parameter log file in the output folder.
 
@@ -724,7 +766,7 @@ The user should be able to identify and reproduce a parameter set from the log f
 
 ---
 
-## Step 20. Running Parameter Trials
+## Step 21. Running Parameter Trials
 
 For each candidate parameter set:
 
@@ -736,6 +778,10 @@ For each candidate parameter set:
 6. save both figures using ordered file names
 7. append the result to the parameter log
 
+If the user did not specify the number of parameter sets, run 300 parameter sets.
+
+If the user specified a number, run that number of parameter sets.
+
 If a simulation fails, record the failure in the log.
 
 Do not delete failed cases silently.
@@ -744,7 +790,7 @@ If a simulation diverges or produces meaningless output, save the result only if
 
 ---
 
-## Step 21. Final Response to User
+## Step 22. Final Response to User
 
 After preparing or running the trial, report concisely:
 
@@ -782,6 +828,8 @@ Do not ask for unnecessary information.
 
 Only ask for missing information that is required by this skill or needed to resolve a concrete ambiguity.
 
+Do not ask for the number of parameter sets as a required missing item. If the user does not specify the count, use the default value of 300.
+
 ---
 
 # MATLAB Style Requirements
@@ -803,6 +851,7 @@ When generating MATLAB code, follow these style requirements unless the user exp
 13. Use 2D phase portraits unless the user requests 3D plots.
 14. Avoid hard-coded array indices for transient removal.
 15. Preserve the style of the sample scripts in `scripts/`.
+16. Run 300 parameter sets by default unless the user specifies another count.
 
 ---
 
@@ -846,6 +895,36 @@ Create phase_sweep_1.m and save figures to sweep_1_output.
 
 This input is complete enough to prepare the trial script.
 
+Because the number of parameter sets is not specified in this example, the skill should run 300 parameter sets by default.
+
+---
+
+# Example: Complete Input With Custom Parameter Count
+
+If the user provides:
+
+```text
+Run 500 parameter groups.
+```
+
+then the skill should run 500 parameter sets instead of the default 300.
+
+If the user provides:
+
+```text
+Run 1000 parameter groups.
+```
+
+then the skill should run 1000 parameter sets.
+
+The custom count must be reflected in:
+
+- the generated parameter-set structure
+- the loop range
+- the saved image names
+- the parameter log
+- the final summary
+
 ---
 
 # Example: Incomplete Input
@@ -859,6 +938,8 @@ Tune the parameters of this nonlinear system and generate phase portraits.
 but does not provide equations, simulation settings, initial conditions, or transient-discard settings, do not proceed.
 
 Respond by asking for the missing required information.
+
+Do not ask for the number of parameter sets as a required missing item. If the required scientific and simulation inputs are complete but the parameter-set count is not given, use 300.
 
 ---
 
@@ -929,6 +1010,7 @@ Before running or finalizing a script, verify:
 - time-response transient discard is explicitly provided
 - phase-portrait transient discard is explicitly provided
 - transient-discard values are valid for the simulation time range
+- parameter-set count is either user-specified or defaults to 300
 - `ode45Ps` is preserved unless the user requested otherwise
 - figure annotations include parameter information
 - output image names are ordered and clear
@@ -949,6 +1031,10 @@ Action:
 Stop and ask for the missing items.
 
 Do not choose defaults.
+
+Exception:
+
+Do not treat the number of parameter sets as missing required information. If absent, use the default count of 300.
 
 ---
 
@@ -1033,3 +1119,5 @@ This skill does not choose missing required simulation settings.
 This skill does not silently change solvers.
 
 This skill does not treat physical circuit parameters as arbitrary mathematical constants unless the model is explicitly nondimensionalized or the user instructs otherwise.
+
+This skill does not require the user to specify the number of parameter sets. If the user does not specify that count, the skill uses 300 by default.
