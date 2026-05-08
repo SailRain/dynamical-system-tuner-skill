@@ -96,7 +96,7 @@ Provide the ODE system or state equations.
 
 Accepted formats include:
 
-- MATLAB code (recommended)
+- MATLAB code (RECOMMENDED)
 - plain-text equations
 - LaTeX equations
 - equations in a document
