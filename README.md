@@ -581,6 +581,11 @@ phase_1000.png
 time_response_1000.png
 ```
 
+![Example output images of a continuous circuit system](docs/images/result-example-1.png)
+
+*Example output images of a continuous circuit system. Image provided by Chi CHEN (陈驰).*
+
+
 ### Step 9. Generate a Parameter Log
 
 The output folder includes a parameter log such as:
