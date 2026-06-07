@@ -1,6 +1,6 @@
 ---
 name: dynamical-system-tuner
-description: Tunes and trials parameters for dynamical systems, including nonlinear systems, ODE models, circuit models, physical models, and mathematical systems. Use when the user asks to tune, trial, sweep, explore, adjust, or test parameters of a dynamical system, nonlinear system, ODE system, state-space model, chaos model, oscillator, or circuit model, especially when generating MATLAB simulations, time-response plots, and phase portraits.
+description: Find, tune, trial, or sweep candidate parameter sets for dynamical systems only when the user needs to discover suitable unknown parameters or richer behavior such as chaos, oscillation, convergence, divergence, or self-excitation. Do not use for code-only implementation, refactoring, bifurcation-plot scripts, or tasks that reuse existing or fully specified parameters without asking for parameter search.
 metadata:
   version: 1.2
   category: dynamical-systems
@@ -29,9 +29,11 @@ This skill must follow the user's provided system equations, simulation settings
 
 ## Step 1. Trigger
 
-Use this skill when the user asks to tune, trial, sweep, explore, test, or adjust parameters of a dynamical system.
+Use this skill only when parameter discovery is the actual task.
 
-Relevant user phrases may include:
+The skill is appropriate when the user asks the agent to find, tune, trial, sweep, explore, test, or adjust candidate parameter sets because suitable parameter values are unknown, unclear, or need to be searched to obtain useful dynamical behavior.
+
+Relevant trigger intents may include:
 
 - tune parameters of this dynamical system
 - adjust parameters of this nonlinear system
@@ -39,10 +41,35 @@ Relevant user phrases may include:
 - trial parameter sets
 - test different parameters
 - find usable parameters
-- generate time responses and phase portraits
+- find parameter values that produce chaotic behavior
+- try many candidate parameter sets and save time responses and phase portraits
+- search for usable parameters for this circuit model
 - tune this ODE model
 - tune this circuit model
 - explore parameters for chaos, oscillation, bifurcation, convergence, divergence, or self-excitation
+
+Do not use this skill when the user is only asking for ordinary code work and is not asking the agent to search for suitable parameter values.
+
+Non-trigger cases include:
+
+- modifying, refactoring, or rewriting MATLAB code
+- creating a bifurcation plotting script from an existing script
+- imitating the programming structure or style of another `.m` file
+- using parameters, initial conditions, ODEs, ranges, or source amplitudes that are already provided or should be read from an existing file
+- plotting a specified bifurcation range for one specified bifurcation parameter
+- changing a script to use a specified value such as `A = 0.3e-3`
+
+Negative example:
+
+```text
+Create test.m by following the programming logic and structure of bifur_sys_4_A.m.
+Use the same ODE system, parameter settings, initial values, and simulation settings from that program.
+Set the bifurcation parameter to capacitor C, not C0.
+Use the bifurcation range 10 nF to 680 nF.
+Set A to 0.3e-3.
+```
+
+Do not use this skill for that request. It is a code-generation task with existing and specified parameters, not a parameter-search or parameter-tuning task.
 
 The system may be given as:
 
