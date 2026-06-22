@@ -11,10 +11,6 @@
   <img alt="Parameter sweep" src="https://img.shields.io/badge/parameter%20sweep-300%20default-0f766e.svg">
 </p>
 
-<p align="center">
-  <img src="docs/images/readme-banner.png" alt="Dynamical System Tuner workflow banner" width="100%">
-</p>
-
 ---
 
 ## Overview
@@ -183,7 +179,6 @@ dynamical-system-tuner-skill/
 |-- LICENSE
 |-- docs/
 |   `-- images/
-|       |-- readme-banner.png
 |       `-- result-example-1.png
 `-- dynamical-system-tuner/
     |-- SKILL.md
